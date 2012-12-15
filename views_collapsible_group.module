@@ -1,0 +1,71 @@
+<?php
+/**
+ * @file
+ * Views collapsible group code.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function views_collapsible_group_theme($existing, $type, $theme, $path) {
+  return array(
+    'views_collapsible_group_view_grouping' => array(
+      'variables' => array(
+        'view' => NULL,
+        'options' => NULL,
+        'grouping' => NULL,
+        'grouping_level' => NULL,
+        'rows' => NULL,
+        'title' => '',
+      ),
+    ),
+  );
+}
+
+/**
+ * Process a single collapsible grouping within a view.
+ */
+function template_preprocess_views_collapsible_group_view_grouping(&$vars) {
+  $vars['content'] = $vars['view']->style_plugin->render_grouping_sets($vars['rows'], $vars['grouping_level'] + 1);
+  $vars['collapsible'] = (bool) $vars['grouping']['collapsible'];
+  $vars['collapsed'] = (bool) $vars['grouping']['collapsed'];
+}
+
+/**
+ * Display a single views collapsible grouping.
+ */
+function theme_views_collapsible_group_view_grouping($vars) {
+  $output = '';
+  if ($vars['collapsible']) {
+    // When view is in preview JS and CSS already added. We only have to add
+    // html.
+    if (isset($vars['view']->preview)) {
+      $class = $vars['collapsed'] ? ' ctools-collapsed' : '';
+      $output = '<div class="ctools-collapsible-container' . $class . '">';
+      $output .= '<div class="ctools-collapsible-handle">' . $vars['title'] . '</div>';
+      $output .= '<div class="ctools-collapsible-content">' . $vars['content'] . '</div>';
+      $output .= '</div>';
+    }
+    else {
+      $output = theme('ctools_collapsible', array(
+        'handle' => $vars['title'],
+        'content' => $vars['content'],
+        'collapsed' => $vars['collapsed'],
+      ));
+    }
+  }
+  else {
+    $output = theme('views_view_grouping', $vars);
+  }
+  return $output;
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function views_collapsible_group_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'views_collapsible_group'),
+  );
+}

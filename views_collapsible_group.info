@@ -1,0 +1,7 @@
+name = Views Collapsible Group
+description = Adds an additional collapsible functionality to the views group by option.
+dependencies[] = views
+package = Views
+core = 7.x
+; Handlers
+files[] = views_plugin_style_collapsible_group_defualt.inc
